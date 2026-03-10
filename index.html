@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uplevyl Weekly Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%236366f1'/><text x='16' y='22' font-size='18' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>U</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #f8fafc; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    @media print {
+      body { background: white; color: black; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
+
+    // ─── LIVE DATA (scraped Mar 11, 2026) ────────────────────────────────────
+    const LIVE_DATA = {
+      lastUpdated: "March 11, 2026",
+      currentWeek: "Mar 4–10, 2026",
+      website: {
+        activeUsers: 63, newUsers: 59, returningUsers: 7,
+        sessions: 67, engagedSessions: 42, engagementRate: 62.69,
+        pageViews: 69, avgEngagement: "12s",
+        channels: { Direct: 39, Referral: 28, Organic: 0 },
+        topPages: [{ page: "Uplevyl Home", views: 67 }, { page: "Our Team", views: 10 }]
+      },
+      linkedin: {
+        followers: 16367, newFollowers: 1067,
+        newsletterSubs: 5318, newSubs: 301,
+        pageViews: 1889, uniqueVisitors: 704,
+        impressions: 4649, reactions: 162,
+        comments: 12, reposts: 7,
+        articleViews: 3563, engagements: 45
+      }
+    };
+
+    // ─── HISTORICAL (from weekly reports + live scrape) ──────────────────────
+    const WEEKLY = [
+      { week: "Feb 9–15", w: { au: 110, nu: 103, ret: 13, sess: 126, eng: 58, pv: 135, dir: 70, org: 9, ref: 32 }, l: { fol: 15705, nf: 391, sub: 5090, ns: 81, imp: 1328, rx: 47, av: 911 }, e: null },
+      { week: "Aug 18–24", w: { au: 33, nu: 24, ret: 7, sess: null, eng: null, pv: 12, dir: 32, org: 19, ref: 12 }, l: { fol: 9022, nf: null, sub: 2988, ns: 30, imp: null, rx: 184, av: 122 }, e: { aud: 7751, opens: 2367, or: null, clicks: 118, unsubs: 11 } },
+      { week: "Aug 25–31", w: { au: 22, nu: 15, ret: 9, sess: 51, eng: null, pv: 571, dir: 16, org: 3, ref: 2 }, l: { fol: 9149, nf: 131, sub: 3034, ns: 33, imp: 3370, rx: 111, av: 263 }, e: { aud: 8324, opens: 2331, or: 28, clicks: 111, unsubs: 10 } },
+      { week: "Sep 1–7", w: { au: 187, nu: 169, ret: 38, sess: 242, eng: 118, pv: 349, dir: 119, org: 47, ref: 16 }, l: { fol: 9495, nf: 348, sub: 3140, ns: 79, imp: 2075, rx: 85, av: 315 }, e: { aud: 8286, opens: 1562, or: 19, clicks: 104, unsubs: 15 } },
+      { week: "Sep 8–14", w: { au: 208, nu: 190, ret: 49, sess: 293, eng: 153, pv: 442, dir: 122, org: 59, ref: 24 }, l: { fol: 9592, nf: 80, sub: 3183, ns: 32, imp: 7158, rx: 217, av: 294 }, e: { aud: 8286, opens: 1499, or: 18.1, clicks: 163, unsubs: 6 } },
+      { week: "Sep 15–21", w: { au: 213, nu: 187, ret: 52, sess: 326, eng: 166, pv: 466, dir: 119, org: 74, ref: 26 }, l: { fol: 10182, nf: 608, sub: 3340, ns: 102, imp: 4932, rx: 138, av: 583 }, e: { aud: 8255, opens: 1441, or: 17.5, clicks: 112, unsubs: 8 } },
+      { week: "Sep 22–28", w: { au: 245, nu: 217, ret: 50, sess: 349, eng: 149, pv: 504, dir: 161, org: 65, ref: 19 }, l: { fol: 10484, nf: 303, sub: 3441, ns: 71, imp: 2849, rx: 86, av: 641 }, e: { aud: 8208, opens: 2446, or: 29.8, clicks: 761, unsubs: 11 } },
+      { week: "Sep 29–Oct 5", w: { au: 215, nu: 187, ret: 57, sess: 305, eng: 147, pv: 466, dir: 127, org: 55, ref: 32 }, l: { fol: 10854, nf: 308, sub: 3544, ns: 52, imp: 1789, rx: 66, av: 847 }, e: { aud: 8202, opens: 2443, or: 29.8, clicks: 113, unsubs: 3 } },
+      { week: "Oct 6–12", w: { au: 267, nu: 240, ret: 57, sess: 351, eng: 143, pv: 478, dir: 180, org: 63, ref: 30 }, l: { fol: 10862, nf: 80, sub: 3559, ns: 35, imp: 2938, rx: 113, av: 948 }, e: { aud: 8135, opens: 2475, or: 30.4, clicks: 133, unsubs: 16 } },
+      { week: "Oct 13–19", w: { au: 310, nu: 285, ret: 63, sess: 470, eng: 192, pv: 591, dir: 237, org: 47, ref: 25 }, l: { fol: 10882, nf: 19, sub: 3572, ns: 0, imp: 4564, rx: 185, av: 868 }, e: { aud: 8076, opens: 2317, or: 29, clicks: 221, unsubs: 5 } },
+      { week: "Oct 20–26", w: { au: 341, nu: 314, ret: 42, sess: 419, eng: 121, pv: 555, dir: 263, org: 49, ref: 28 }, l: { fol: 11244, nf: 339, sub: 3664, ns: 58, imp: 2206, rx: 102, av: 1378 }, e: { aud: 8044, opens: 1672, or: 21, clicks: 103, unsubs: 5 } },
+      { week: "Mar 4–10 '26", w: { au: 63, nu: 59, ret: 7, sess: 67, eng: 42, pv: 69, dir: 39, org: 0, ref: 28 }, l: { fol: 16367, nf: 1067, sub: 5318, ns: 301, imp: 4649, rx: 162, av: 3563 }, e: null }
+    ];
+
+    const C = {
+      primary: "#6366f1", secondary: "#8b5cf6", accent: "#06b6d4",
+      green: "#10b981", orange: "#f59e0b", red: "#ef4444", pink: "#ec4899",
+      slate: "#64748b", bg: "#0f172a", card: "#1e293b", cardHover: "#334155",
+      border: "#334155", text: "#f8fafc", muted: "#94a3b8"
+    };
+    const CC = ["#6366f1", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ec4899"];
+    const ttStyle = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text };
+
+    function MetricCard({ label, value, sub, color = C.primary }) {
+      return (
+        <div style={{ background: C.card, borderRadius: 12, padding: "20px 24px", border: `1px solid ${C.border}`, flex: "1 1 180px", minWidth: 180, transition: "transform 0.2s, box-shadow 0.2s" }}
+          onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 4px 20px ${color}20`; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+          <div style={{ color: C.muted, fontSize: 13, marginBottom: 6, fontWeight: 500 }}>{label}</div>
+          <div style={{ color: C.text, fontSize: 28, fontWeight: 700, lineHeight: 1.1 }}>{value}</div>
+          {sub && <div style={{ color, fontSize: 13, marginTop: 4, fontWeight: 500 }}>{sub}</div>}
+        </div>
+      );
+    }
+
+    function SectionHeader({ title, subtitle }) {
+      return (
+        <div style={{ marginBottom: 20, marginTop: 8 }}>
+          <h2 style={{ color: C.text, fontSize: 20, fontWeight: 700, margin: 0 }}>{title}</h2>
+          {subtitle && <p style={{ color: C.muted, fontSize: 13, margin: "4px 0 0" }}>{subtitle}</p>}
+        </div>
+      );
+    }
+
+    function ChartCard({ title, children, height = 280 }) {
+      return (
+        <div style={{ background: C.card, borderRadius: 12, padding: 20, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+          <div style={{ color: C.muted, fontSize: 13, fontWeight: 600, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
+          <ResponsiveContainer width="100%" height={height}>{children}</ResponsiveContainer>
+        </div>
+      );
+    }
+
+    function TabButton({ active, label, onClick }) {
+      return (
+        <button onClick={onClick} style={{
+          background: active ? C.primary : "transparent", color: active ? "#fff" : C.muted,
+          border: active ? "none" : `1px solid ${C.border}`, borderRadius: 8, padding: "8px 20px",
+          cursor: "pointer", fontSize: 14, fontWeight: 600, transition: "all 0.2s",
+          outline: "none"
+        }}
+          onMouseEnter={e => { if (!active) e.currentTarget.style.borderColor = C.primary; }}
+          onMouseLeave={e => { if (!active) e.currentTarget.style.borderColor = C.border; }}>
+          {label}
+        </button>
+      );
+    }
+
+    // ─── OVERVIEW TAB ─────────────────────────────────────────────────────
+    function OverviewTab() {
+      const wd = LIVE_DATA.website;
+      const ld = LIVE_DATA.linkedin;
+      const followerData = WEEKLY.filter(w => w.l.fol).map(w => ({ week: w.week, followers: w.l.fol, subs: w.l.sub }));
+      const usersData = WEEKLY.filter(w => w.w.au).map(w => ({ week: w.week, users: w.w.au, sessions: w.w.sess }));
+
+      return (
+        <div>
+          <SectionHeader title="Weekly Snapshot" subtitle={LIVE_DATA.currentWeek} />
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            <MetricCard label="Active Users" value={wd.activeUsers} sub={`${wd.newUsers} new`} color={C.green} />
+            <MetricCard label="LinkedIn Followers" value={ld.followers.toLocaleString()} sub={`+${ld.newFollowers.toLocaleString()} this period`} color={C.accent} />
+            <MetricCard label="Newsletter Subs" value={ld.newsletterSubs.toLocaleString()} sub={`+${ld.newSubs} new`} color={C.secondary} />
+            <MetricCard label="Impressions" value={ld.impressions.toLocaleString()} sub={`${ld.reactions} reactions`} color={C.orange} />
+            <MetricCard label="Total Page Views" value={(wd.pageViews + ld.pageViews).toLocaleString()} sub="Website + LinkedIn" color={C.pink} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: 16 }}>
+            <ChartCard title="LinkedIn Follower Growth">
+              <AreaChart data={followerData}>
+                <defs><linearGradient id="gFol" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.accent} stopOpacity={0.3}/><stop offset="95%" stopColor={C.accent} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }} domain={["dataMin - 500", "dataMax + 500"]}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Area type="monotone" dataKey="followers" stroke={C.accent} fill="url(#gFol)" strokeWidth={2}/>
+              </AreaChart>
+            </ChartCard>
+
+            <ChartCard title="Website Active Users">
+              <AreaChart data={usersData}>
+                <defs><linearGradient id="gUsr" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.primary} stopOpacity={0.3}/><stop offset="95%" stopColor={C.primary} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Area type="monotone" dataKey="users" stroke={C.primary} fill="url(#gUsr)" strokeWidth={2} name="Active Users"/>
+                <Area type="monotone" dataKey="sessions" stroke={C.secondary} fill="none" strokeWidth={1.5} strokeDasharray="4 4" name="Sessions"/>
+                <Legend wrapperStyle={{ color: C.muted, fontSize: 12 }}/>
+              </AreaChart>
+            </ChartCard>
+          </div>
+
+          {/* Key highlights */}
+          <div style={{ background: C.card, borderRadius: 12, padding: 20, border: `1px solid ${C.border}`, marginTop: 8 }}>
+            <div style={{ color: C.muted, fontSize: 13, fontWeight: 600, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Key Highlights</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+              <div style={{ padding: 16, background: `${C.green}10`, borderRadius: 8, border: `1px solid ${C.green}30` }}>
+                <div style={{ color: C.green, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>LinkedIn Growth</div>
+                <div style={{ color: C.text, fontSize: 14 }}>Followers grew from 9,022 to 16,367 (+81%) since Aug 2025. Newsletter subs nearly doubled to 5,318.</div>
+              </div>
+              <div style={{ padding: 16, background: `${C.accent}10`, borderRadius: 8, border: `1px solid ${C.accent}30` }}>
+                <div style={{ color: C.accent, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Content Engagement</div>
+                <div style={{ color: C.text, fontSize: 14 }}>Impressions up 52.2%, reactions up 25%, reposts up 600%. Article views at 3,563 this period.</div>
+              </div>
+              <div style={{ padding: 16, background: `${C.orange}10`, borderRadius: 8, border: `1px solid ${C.orange}30` }}>
+                <div style={{ color: C.orange, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Email Performance</div>
+                <div style={{ color: C.text, fontSize: 14 }}>Avg open rate of ~25% across campaigns. Best performer at 30.4% open rate (Oct 6-12 eblast).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── WEBSITE TAB ──────────────────────────────────────────────────────
+    function WebsiteTab() {
+      const wd = LIVE_DATA.website;
+      const channelData = Object.entries(wd.channels).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
+      const trendData = WEEKLY.filter(w => w.w.sess).map(w => ({ week: w.week, sessions: w.w.sess, engaged: w.w.eng, pageViews: w.w.pv }));
+      const acqTrend = WEEKLY.filter(w => w.w.dir).map(w => ({ week: w.week, Direct: w.w.dir, Organic: w.w.org, Referral: w.w.ref }));
+
+      return (
+        <div>
+          <SectionHeader title="Website Analytics (GA4)" subtitle={LIVE_DATA.currentWeek}/>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            <MetricCard label="Active Users" value={wd.activeUsers} sub={`${wd.newUsers} new / ${wd.returningUsers} returning`} color={C.green}/>
+            <MetricCard label="Sessions" value={wd.sessions} sub={`${wd.engagedSessions} engaged (${wd.engagementRate}%)`} color={C.primary}/>
+            <MetricCard label="Page Views" value={wd.pageViews} color={C.secondary}/>
+            <MetricCard label="Avg Engagement" value={wd.avgEngagement} color={C.orange}/>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
+            <ChartCard title="Sessions & Engagement Trend">
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Line type="monotone" dataKey="sessions" stroke={C.primary} strokeWidth={2} dot={{ r: 3 }} name="Sessions"/>
+                <Line type="monotone" dataKey="engaged" stroke={C.green} strokeWidth={2} dot={{ r: 3 }} name="Engaged"/>
+                <Line type="monotone" dataKey="pageViews" stroke={C.orange} strokeWidth={2} dot={{ r: 3 }} name="Page Views"/>
+                <Legend wrapperStyle={{ color: C.muted, fontSize: 12 }}/>
+              </LineChart>
+            </ChartCard>
+
+            <ChartCard title="Traffic Channels (This Week)">
+              <PieChart>
+                <Pie data={channelData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={{ stroke: C.muted }}>
+                  {channelData.map((_, i) => <Cell key={i} fill={CC[i % CC.length]}/>)}
+                </Pie>
+                <Tooltip contentStyle={ttStyle}/>
+              </PieChart>
+            </ChartCard>
+          </div>
+
+          <ChartCard title="Acquisition Channel Trend">
+            <BarChart data={acqTrend}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+              <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+              <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+              <Tooltip contentStyle={ttStyle}/>
+              <Bar dataKey="Direct" fill={C.primary} radius={[4, 4, 0, 0]}/>
+              <Bar dataKey="Organic" fill={C.green} radius={[4, 4, 0, 0]}/>
+              <Bar dataKey="Referral" fill={C.accent} radius={[4, 4, 0, 0]}/>
+              <Legend wrapperStyle={{ color: C.muted, fontSize: 12 }}/>
+            </BarChart>
+          </ChartCard>
+
+          <div style={{ background: C.card, borderRadius: 12, padding: 20, border: `1px solid ${C.border}` }}>
+            <div style={{ color: C.muted, fontSize: 13, fontWeight: 600, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Pages</div>
+            {wd.topPages.map((p, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < wd.topPages.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                <span style={{ color: C.text, fontSize: 14 }}>{p.page}</span>
+                <span style={{ color: C.primary, fontWeight: 600, fontSize: 14 }}>{p.views} views</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── LINKEDIN TAB ─────────────────────────────────────────────────────
+    function LinkedInTab() {
+      const ld = LIVE_DATA.linkedin;
+      const folTrend = WEEKLY.filter(w => w.l.fol).map(w => ({ week: w.week, followers: w.l.fol, newFollowers: w.l.nf }));
+      const engTrend = WEEKLY.filter(w => w.l.imp).map(w => ({ week: w.week, impressions: w.l.imp, reactions: w.l.rx }));
+      const nlTrend = WEEKLY.filter(w => w.l.sub).map(w => ({ week: w.week, subscribers: w.l.sub, articleViews: w.l.av }));
+
+      return (
+        <div>
+          <SectionHeader title="LinkedIn Analytics" subtitle="Last 30 days (Feb 7 – Mar 8, 2026)"/>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            <MetricCard label="Followers" value={ld.followers.toLocaleString()} sub={`+${ld.newFollowers.toLocaleString()} (+123%)`} color={C.green}/>
+            <MetricCard label="Newsletter Subs" value={ld.newsletterSubs.toLocaleString()} sub={`+${ld.newSubs} new`} color={C.accent}/>
+            <MetricCard label="Page Views" value={ld.pageViews.toLocaleString()} sub={`${ld.uniqueVisitors} unique visitors`} color={C.primary}/>
+            <MetricCard label="Impressions" value={ld.impressions.toLocaleString()} sub={`+52.2% growth`} color={C.orange}/>
+          </div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            <MetricCard label="Reactions" value={ld.reactions} sub="+25% growth" color={C.pink}/>
+            <MetricCard label="Comments" value={ld.comments} sub="+20% growth" color={C.secondary}/>
+            <MetricCard label="Reposts" value={ld.reposts} sub="+600% growth" color={C.green}/>
+            <MetricCard label="Article Views" value={ld.articleViews.toLocaleString()} color={C.accent}/>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: 16 }}>
+            <ChartCard title="Follower Growth Over Time">
+              <AreaChart data={folTrend}>
+                <defs><linearGradient id="gFol2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.3}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }} domain={["dataMin - 500", "auto"]}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Area type="monotone" dataKey="followers" stroke={C.green} fill="url(#gFol2)" strokeWidth={2}/>
+              </AreaChart>
+            </ChartCard>
+
+            <ChartCard title="New Followers Per Week">
+              <BarChart data={folTrend.filter(d => d.newFollowers)}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Bar dataKey="newFollowers" fill={C.accent} radius={[4, 4, 0, 0]} name="New Followers"/>
+              </BarChart>
+            </ChartCard>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: 16 }}>
+            <ChartCard title="Impressions & Reactions">
+              <LineChart data={engTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis yAxisId="left" tick={{ fill: C.muted, fontSize: 11 }}/>
+                <YAxis yAxisId="right" orientation="right" tick={{ fill: C.muted, fontSize: 11 }}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Line yAxisId="left" type="monotone" dataKey="impressions" stroke={C.orange} strokeWidth={2} dot={{ r: 3 }}/>
+                <Line yAxisId="right" type="monotone" dataKey="reactions" stroke={C.pink} strokeWidth={2} dot={{ r: 3 }}/>
+                <Legend wrapperStyle={{ color: C.muted, fontSize: 12 }}/>
+              </LineChart>
+            </ChartCard>
+
+            <ChartCard title="Newsletter Subscriber Growth">
+              <AreaChart data={nlTrend}>
+                <defs><linearGradient id="gSub" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.secondary} stopOpacity={0.3}/><stop offset="95%" stopColor={C.secondary} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }} domain={["dataMin - 200", "auto"]}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Area type="monotone" dataKey="subscribers" stroke={C.secondary} fill="url(#gSub)" strokeWidth={2}/>
+              </AreaChart>
+            </ChartCard>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── EMAIL TAB ────────────────────────────────────────────────────────
+    function EmailTab() {
+      const emailData = WEEKLY.filter(w => w.e).map(w => ({
+        week: w.week, audience: w.e.aud, opens: w.e.opens,
+        openRate: w.e.or, clicks: w.e.clicks, unsubs: w.e.unsubs
+      }));
+
+      return (
+        <div>
+          <SectionHeader title="Email Campaign Performance" subtitle="Historical data from GoHighLevel (Aug–Oct 2025)"/>
+          <div style={{ background: `${C.orange}15`, border: `1px solid ${C.orange}40`, borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
+            <span style={{ color: C.orange, fontSize: 13 }}>Note: Showing last available campaign data. This section updates automatically when GoHighLevel data is fetched on the next scheduled run.</span>
+          </div>
+
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            <MetricCard label="Avg Audience" value="~8,200" sub="per eblast" color={C.primary}/>
+            <MetricCard label="Avg Open Rate" value="25.2%" sub="across campaigns" color={C.green}/>
+            <MetricCard label="Total Clicks (last)" value="103" sub="Oct 20 eblast" color={C.accent}/>
+            <MetricCard label="Best Open Rate" value="30.4%" sub="Oct 6–12 eblast" color={C.orange}/>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: 16 }}>
+            <ChartCard title="Opens & Clicks Per Campaign">
+              <BarChart data={emailData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+                <Tooltip contentStyle={ttStyle}/>
+                <Bar dataKey="opens" fill={C.primary} name="Opens" radius={[4, 4, 0, 0]}/>
+                <Bar dataKey="clicks" fill={C.accent} name="Clicks" radius={[4, 4, 0, 0]}/>
+                <Legend wrapperStyle={{ color: C.muted, fontSize: 12 }}/>
+              </BarChart>
+            </ChartCard>
+
+            <ChartCard title="Open Rate Trend (%)">
+              <LineChart data={emailData.filter(d => d.openRate)}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+                <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+                <YAxis tick={{ fill: C.muted, fontSize: 11 }} domain={[0, 40]}/>
+                <Tooltip contentStyle={ttStyle} formatter={(val) => `${val}%`}/>
+                <Line type="monotone" dataKey="openRate" stroke={C.green} strokeWidth={2} dot={{ r: 4 }} name="Open Rate %"/>
+              </LineChart>
+            </ChartCard>
+          </div>
+
+          <ChartCard title="Unsubscribes Per Campaign" height={200}>
+            <BarChart data={emailData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
+              <XAxis dataKey="week" tick={{ fill: C.muted, fontSize: 10 }} angle={-35} textAnchor="end" height={60}/>
+              <YAxis tick={{ fill: C.muted, fontSize: 11 }}/>
+              <Tooltip contentStyle={ttStyle}/>
+              <Bar dataKey="unsubs" fill={C.red} name="Unsubscribes" radius={[4, 4, 0, 0]}/>
+            </BarChart>
+          </ChartCard>
+
+          <div style={{ background: C.card, borderRadius: 12, padding: 20, border: `1px solid ${C.border}` }}>
+            <div style={{ color: C.muted, fontSize: 13, fontWeight: 600, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.05em" }}>Campaign Details</div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
+                <thead>
+                  <tr>{["Week", "Audience", "Opens", "Open Rate", "Clicks", "Unsubs"].map(h => (
+                    <th key={h} style={{ color: C.muted, fontSize: 12, fontWeight: 600, padding: "8px 12px", textAlign: "left", borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                  ))}</tr>
+                </thead>
+                <tbody>
+                  {emailData.map((d, i) => (
+                    <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
+                      <td style={{ color: C.text, fontSize: 13, padding: "10px 12px" }}>{d.week}</td>
+                      <td style={{ color: C.text, fontSize: 13, padding: "10px 12px" }}>{d.audience?.toLocaleString() || "—"}</td>
+                      <td style={{ color: C.text, fontSize: 13, padding: "10px 12px" }}>{d.opens?.toLocaleString() || "—"}</td>
+                      <td style={{ color: d.openRate >= 25 ? C.green : C.orange, fontSize: 13, padding: "10px 12px", fontWeight: 600 }}>{d.openRate ? `${d.openRate}%` : "—"}</td>
+                      <td style={{ color: C.text, fontSize: 13, padding: "10px 12px" }}>{d.clicks || "—"}</td>
+                      <td style={{ color: d.unsubs > 10 ? C.red : C.muted, fontSize: 13, padding: "10px 12px" }}>{d.unsubs || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── MAIN APP ─────────────────────────────────────────────────────────
+    function App() {
+      const [activeTab, setActiveTab] = useState("overview");
+      const tabs = [
+        { id: "overview", label: "Overview" },
+        { id: "website", label: "Website" },
+        { id: "linkedin", label: "LinkedIn" },
+        { id: "email", label: "Email" }
+      ];
+
+      return (
+        <div style={{ minHeight: "100vh" }}>
+          {/* Header */}
+          <div style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)", borderBottom: `1px solid ${C.border}`, padding: "24px 32px", position: "sticky", top: 0, zIndex: 100 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1200, margin: "0 auto" }}>
+              <div>
+                <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, background: "linear-gradient(135deg, #818cf8, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Uplevyl Weekly Dashboard</h1>
+                <p style={{ margin: "4px 0 0", color: C.muted, fontSize: 14 }}>Marketing Performance Report for Founder</p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.green, boxShadow: `0 0 8px ${C.green}`, animation: "pulse 2s infinite" }}/>
+                  <span style={{ color: C.green, fontSize: 13, fontWeight: 600 }}>Live Data</span>
+                </div>
+                <div style={{ color: C.muted, fontSize: 12 }}>Updated: {LIVE_DATA.lastUpdated}</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 20, maxWidth: 1200, margin: "20px auto 0" }}>
+              {tabs.map(t => <TabButton key={t.id} active={activeTab === t.id} label={t.label} onClick={() => setActiveTab(t.id)}/>)}
+            </div>
+          </div>
+
+          {/* Content */}
+          <div style={{ padding: "24px 32px", maxWidth: 1200, margin: "0 auto" }}>
+            {activeTab === "overview" && <OverviewTab/>}
+            {activeTab === "website" && <WebsiteTab/>}
+            {activeTab === "linkedin" && <LinkedInTab/>}
+            {activeTab === "email" && <EmailTab/>}
+          </div>
+
+          {/* Footer */}
+          <div style={{ padding: "16px 32px", borderTop: `1px solid ${C.border}`, textAlign: "center" }}>
+            <span style={{ color: C.muted, fontSize: 12 }}>Data sources: Google Analytics 4 (live) | LinkedIn Analytics (live) | GoHighLevel (historical) | Automated by Claude</span>
+          </div>
+
+          <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
