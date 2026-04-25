@@ -746,15 +746,15 @@ function TabButton({
 function OverviewTab() {
   const wd = LIVE_DATA.website;
   const ld = LIVE_DATA.linkedin;
-  const followerData = WEEKLY.filter(w => w.l.fol).map(w => ({
+  const followerData = WEEKLY.filter(w => w.l?.fol).map(w => ({
     week: w.week,
-    followers: w.l.fol,
-    subs: w.l.sub
+    followers: w.l?.fol,
+    subs: w.l?.sub
   }));
-  const usersData = WEEKLY.filter(w => w.w.au).map(w => ({
+  const usersData = WEEKLY.filter(w => w.w?.au).map(w => ({
     week: w.week,
-    users: w.w.au,
-    sessions: w.w.sess
+    users: w.w?.au,
+    sessions: w.w?.sess
   }));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SectionHeader, {
     title: "Weekly Snapshot",
@@ -988,17 +988,17 @@ function WebsiteTab() {
     name,
     value
   }));
-  const trendData = WEEKLY.filter(w => w.w.sess).map(w => ({
+  const trendData = WEEKLY.filter(w => w.w?.sess).map(w => ({
     week: w.week,
-    sessions: w.w.sess,
-    engaged: w.w.eng,
-    pageViews: w.w.pv
+    sessions: w.w?.sess,
+    engaged: w.w?.eng,
+    pageViews: w.w?.pv
   }));
-  const acqTrend = WEEKLY.filter(w => w.w.dir).map(w => ({
+  const acqTrend = WEEKLY.filter(w => w.w?.dir).map(w => ({
     week: w.week,
-    Direct: w.w.dir,
-    Organic: w.w.org,
-    Referral: w.w.ref
+    Direct: w.w?.dir,
+    Organic: w.w?.org,
+    Referral: w.w?.ref
   }));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SectionHeader, {
     title: "Website Analytics (GA4)",
@@ -1191,20 +1191,20 @@ function WebsiteTab() {
 // ─── LINKEDIN TAB ─────────────────────────────────────────────────────
 function LinkedInTab() {
   const ld = LIVE_DATA.linkedin;
-  const folTrend = WEEKLY.filter(w => w.l.fol).map(w => ({
+  const folTrend = WEEKLY.filter(w => w.l?.fol).map(w => ({
     week: w.week,
-    followers: w.l.fol,
-    newFollowers: w.l.nf
+    followers: w.l?.fol,
+    newFollowers: w.l?.nf
   }));
-  const engTrend = WEEKLY.filter(w => w.l.imp).map(w => ({
+  const engTrend = WEEKLY.filter(w => w.l?.imp).map(w => ({
     week: w.week,
-    impressions: w.l.imp,
-    reactions: w.l.rx
+    impressions: w.l?.imp,
+    reactions: w.l?.rx
   }));
-  const nlTrend = WEEKLY.filter(w => w.l.sub).map(w => ({
+  const nlTrend = WEEKLY.filter(w => w.l?.sub).map(w => ({
     week: w.week,
-    subscribers: w.l.sub,
-    articleViews: w.l.av
+    subscribers: w.l?.sub,
+    articleViews: w.l?.av
   }));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SectionHeader, {
     title: "LinkedIn Analytics",
@@ -1451,11 +1451,11 @@ function LinkedInTab() {
 function EmailTab() {
   const emailData = WEEKLY.filter(w => w.e).map(w => ({
     week: w.week,
-    audience: w.e.aud,
-    opens: w.e.opens,
-    openRate: w.e.or,
-    clicks: w.e.clicks,
-    unsubs: w.e.unsubs
+    audience: w.e?.aud,
+    opens: w.e?.opens,
+    openRate: w.e?.or,
+    clicks: w.e?.clicks,
+    unsubs: w.e?.unsubs
   }));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SectionHeader, {
     title: "Email Campaign Performance",
