@@ -2,8 +2,9 @@ name: Update Dashboard Data
 
 on:
   schedule:
+    # Every Monday at 7:00 AM UTC (2:00 AM ET / 11:30 AM IST)
     - cron: '0 7 * * 1'
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   contents: write
@@ -36,6 +37,12 @@ jobs:
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_ORG_ID: ${{ secrets.LINKEDIN_ORG_ID }}
         run: node scripts/collect-data.js
+
+      - name: Fix null safety in index.html
+        run: |
+          sed -i 's/w\.l\./w.l?./g' index.html
+          sed -i 's/w\.w\./w.w?./g' index.html
+          sed -i 's/w\.e\./w.e?./g' index.html
 
       - name: Clean up credentials
         if: always()
