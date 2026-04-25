@@ -163,386 +163,436 @@ const {useState,useEffect} = React;
 const {LineChart,Line,BarChart,Bar,AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,Legend} = Recharts;
 
 
-// ─── LIVE DATA (scraped Mar 11, 2026) ────────────────────────────────────
+// ─── LIVE DATA (collected April 25, 2026) ────────────────────────────────────
 const LIVE_DATA = {
-  lastUpdated: "March 13, 2026",
-  currentWeek: "Mar 2–9, 2026",
-  website: {
-    activeUsers: 72,
-    newUsers: 68,
-    returningUsers: 7,
-    sessions: 76,
-    engagedSessions: 49,
-    engagementRate: 64.47,
-    pageViews: 79,
-    avgEngagement: "11s",
-    channels: {
-      Direct: 46,
-      Referral: 30,
-      Organic: 0
+  "lastUpdated": "April 25, 2026",
+  "currentWeek": "Apr 13–Apr 19",
+  "website": {
+    "activeUsers": 100,
+    "newUsers": 98,
+    "returningUsers": 2,
+    "sessions": 102,
+    "engagedSessions": 51,
+    "engagementRate": 50,
+    "pageViews": 113,
+    "avgEngagement": "1m 36s",
+    "channels": {
+      "Direct": 76,
+      "Referral": 26,
+      "Organic": 0
     },
-    topPages: [{
-      page: "Uplevyl Home",
-      views: 65
-    }, {
-      page: "Our Team",
-      views: 8
-    }]
+    "topPages": [
+      {
+        "page": "Uplevyl",
+        "views": 50
+      },
+      {
+        "page": "Terms and Condtions - Uplevyl",
+        "views": 28
+      },
+      {
+        "page": "Privacy Policy - Uplevyl",
+        "views": 27
+      },
+      {
+        "page": "Our Team - Uplevyl",
+        "views": 7
+      },
+      {
+        "page": "Careers - Uplevyl",
+        "views": 1
+      }
+    ]
   },
-  linkedin: {
-    followers: 16365,
-    newFollowers: 1067,
-    newsletterSubs: 5321,
-    newSubs: 301,
-    pageViews: 1938,
-    uniqueVisitors: 704,
-    impressions: 4803,
-    reactions: 164,
-    comments: 12,
-    reposts: 7,
-    articleViews: 3816,
-    engagements: 45
+  "linkedin": {
+    "followers": 16365,
+    "newFollowers": 1067,
+    "newsletterSubs": 5321,
+    "newSubs": 301,
+    "pageViews": 1938,
+    "uniqueVisitors": 704,
+    "impressions": 4803,
+    "reactions": 164,
+    "comments": 12,
+    "reposts": 7,
+    "articleViews": 3816,
+    "engagements": 45
   }
 };
 
-// ─── HISTORICAL (from weekly reports + live scrape) ──────────────────────
-const WEEKLY = [{
-  week: "Feb 9–15",
-  w: {
-    au: 110,
-    nu: 103,
-    ret: 13,
-    sess: 126,
-    eng: 58,
-    pv: 135,
-    dir: 70,
-    org: 9,
-    ref: 32
+// ─── HISTORICAL (auto-collected weekly data) ──────────────────────
+const WEEKLY = [
+  {
+    "week": "Feb 9–15",
+    "w": {
+      "au": 110,
+      "nu": 103,
+      "ret": 13,
+      "sess": 126,
+      "eng": 58,
+      "pv": 135,
+      "dir": 70,
+      "org": 9,
+      "ref": 32
+    },
+    "l": {
+      "fol": 15705,
+      "nf": 391,
+      "sub": 5090,
+      "ns": 81,
+      "imp": 1328,
+      "rx": 47,
+      "av": 911
+    },
+    "e": null
   },
-  l: {
-    fol: 15705,
-    nf: 391,
-    sub: 5090,
-    ns: 81,
-    imp: 1328,
-    rx: 47,
-    av: 911
+  {
+    "week": "Aug 18–24",
+    "w": {
+      "au": 33,
+      "nu": 24,
+      "ret": 7,
+      "sess": null,
+      "eng": null,
+      "pv": 12,
+      "dir": 32,
+      "org": 19,
+      "ref": 12
+    },
+    "l": {
+      "fol": 9022,
+      "nf": null,
+      "sub": 2988,
+      "ns": 30,
+      "imp": null,
+      "rx": 184,
+      "av": 122
+    },
+    "e": {
+      "aud": 15250,
+      "opens": 4518,
+      "or": 29.6,
+      "clicks": 220,
+      "unsubs": 18
+    }
   },
-  e: null
-}, {
-  week: "Aug 18–24",
-  w: {
-    au: 33,
-    nu: 24,
-    ret: 7,
-    sess: null,
-    eng: null,
-    pv: 12,
-    dir: 32,
-    org: 19,
-    ref: 12
+  {
+    "week": "Aug 25–31",
+    "w": {
+      "au": 22,
+      "nu": 15,
+      "ret": 9,
+      "sess": 51,
+      "eng": null,
+      "pv": 571,
+      "dir": 16,
+      "org": 3,
+      "ref": 2
+    },
+    "l": {
+      "fol": 9149,
+      "nf": 131,
+      "sub": 3034,
+      "ns": 33,
+      "imp": 3370,
+      "rx": 111,
+      "av": 263
+    },
+    "e": {
+      "aud": 16633,
+      "opens": 4697,
+      "or": 28.5,
+      "clicks": 219,
+      "unsubs": 27
+    }
   },
-  l: {
-    fol: 9022,
-    nf: null,
-    sub: 2988,
-    ns: 30,
-    imp: null,
-    rx: 184,
-    av: 122
+  {
+    "week": "Sep 1–7",
+    "w": {
+      "au": 187,
+      "nu": 169,
+      "ret": 38,
+      "sess": 242,
+      "eng": 118,
+      "pv": 349,
+      "dir": 119,
+      "org": 47,
+      "ref": 16
+    },
+    "l": {
+      "fol": 9495,
+      "nf": 348,
+      "sub": 3140,
+      "ns": 79,
+      "imp": 2075,
+      "rx": 85,
+      "av": 315
+    },
+    "e": {
+      "aud": 16602,
+      "opens": 3042,
+      "or": 18.5,
+      "clicks": 215,
+      "unsubs": 36
+    }
   },
-  e: {
-    aud: 15250,
-    opens: 4518,
-    or: 29.6,
-    clicks: 220,
-    unsubs: 18
+  {
+    "week": "Sep 8–14",
+    "w": {
+      "au": 208,
+      "nu": 190,
+      "ret": 49,
+      "sess": 293,
+      "eng": 153,
+      "pv": 442,
+      "dir": 122,
+      "org": 59,
+      "ref": 24
+    },
+    "l": {
+      "fol": 9592,
+      "nf": 80,
+      "sub": 3183,
+      "ns": 32,
+      "imp": 7158,
+      "rx": 217,
+      "av": 294
+    },
+    "e": {
+      "aud": 16551,
+      "opens": 3006,
+      "or": 18.1,
+      "clicks": 280,
+      "unsubs": 18
+    }
+  },
+  {
+    "week": "Sep 15–21",
+    "w": {
+      "au": 213,
+      "nu": 187,
+      "ret": 52,
+      "sess": 326,
+      "eng": 166,
+      "pv": 466,
+      "dir": 119,
+      "org": 74,
+      "ref": 26
+    },
+    "l": {
+      "fol": 10182,
+      "nf": 608,
+      "sub": 3340,
+      "ns": 102,
+      "imp": 4932,
+      "rx": 138,
+      "av": 583
+    },
+    "e": {
+      "aud": 16502,
+      "opens": 2907,
+      "or": 17.6,
+      "clicks": 217,
+      "unsubs": 14
+    }
+  },
+  {
+    "week": "Sep 22–28",
+    "w": {
+      "au": 245,
+      "nu": 217,
+      "ret": 50,
+      "sess": 349,
+      "eng": 149,
+      "pv": 504,
+      "dir": 161,
+      "org": 65,
+      "ref": 19
+    },
+    "l": {
+      "fol": 10484,
+      "nf": 303,
+      "sub": 3441,
+      "ns": 71,
+      "imp": 2849,
+      "rx": 86,
+      "av": 641
+    },
+    "e": {
+      "aud": 16429,
+      "opens": 4860,
+      "or": 29.6,
+      "clicks": 866,
+      "unsubs": 15
+    }
+  },
+  {
+    "week": "Sep 29–Oct 5",
+    "w": {
+      "au": 215,
+      "nu": 187,
+      "ret": 57,
+      "sess": 305,
+      "eng": 147,
+      "pv": 466,
+      "dir": 127,
+      "org": 55,
+      "ref": 32
+    },
+    "l": {
+      "fol": 10854,
+      "nf": 308,
+      "sub": 3544,
+      "ns": 52,
+      "imp": 1789,
+      "rx": 66,
+      "av": 847
+    },
+    "e": {
+      "aud": 16383,
+      "opens": 4917,
+      "or": 30,
+      "clicks": 229,
+      "unsubs": 17
+    }
+  },
+  {
+    "week": "Oct 6–12",
+    "w": {
+      "au": 267,
+      "nu": 240,
+      "ret": 57,
+      "sess": 351,
+      "eng": 143,
+      "pv": 478,
+      "dir": 180,
+      "org": 63,
+      "ref": 30
+    },
+    "l": {
+      "fol": 10862,
+      "nf": 80,
+      "sub": 3559,
+      "ns": 35,
+      "imp": 2938,
+      "rx": 113,
+      "av": 948
+    },
+    "e": {
+      "aud": 16251,
+      "opens": 4953,
+      "or": 30.4,
+      "clicks": 1671,
+      "unsubs": 21
+    }
+  },
+  {
+    "week": "Oct 13–19",
+    "w": {
+      "au": 310,
+      "nu": 285,
+      "ret": 63,
+      "sess": 470,
+      "eng": 192,
+      "pv": 591,
+      "dir": 237,
+      "org": 47,
+      "ref": 25
+    },
+    "l": {
+      "fol": 10882,
+      "nf": 19,
+      "sub": 3572,
+      "ns": 0,
+      "imp": 4564,
+      "rx": 185,
+      "av": 868
+    },
+    "e": {
+      "aud": 16128,
+      "opens": 4785,
+      "or": 30,
+      "clicks": 363,
+      "unsubs": 11
+    }
+  },
+  {
+    "week": "Oct 20–26",
+    "w": {
+      "au": 341,
+      "nu": 314,
+      "ret": 42,
+      "sess": 419,
+      "eng": 121,
+      "pv": 555,
+      "dir": 263,
+      "org": 49,
+      "ref": 28
+    },
+    "l": {
+      "fol": 11244,
+      "nf": 339,
+      "sub": 3664,
+      "ns": 58,
+      "imp": 2206,
+      "rx": 102,
+      "av": 1378
+    },
+    "e": {
+      "aud": 15992,
+      "opens": 3136,
+      "or": 19.7,
+      "clicks": 296,
+      "unsubs": 27
+    }
+  },
+  {
+    "week": "Mar 2–9 '26",
+    "w": {
+      "au": 72,
+      "nu": 68,
+      "ret": 7,
+      "sess": 76,
+      "eng": 49,
+      "pv": 79,
+      "dir": 46,
+      "org": 0,
+      "ref": 30
+    },
+    "l": {
+      "fol": 16365,
+      "nf": 1067,
+      "sub": 5321,
+      "ns": 301,
+      "imp": 4803,
+      "rx": 164,
+      "av": 3816
+    },
+    "e": null
+  },
+  {
+    "week": "Apr 13–Apr 19",
+    "w": {
+      "au": 100,
+      "nu": 98,
+      "ret": 2,
+      "sess": 102,
+      "eng": 51,
+      "pv": 113,
+      "dir": 76,
+      "org": 0,
+      "ref": 26
+    },
+    "l": null,
+    "e": {
+      "aud": 0,
+      "opens": 0,
+      "or": 0,
+      "clicks": 0,
+      "unsubs": 0
+    }
   }
-}, {
-  week: "Aug 25–31",
-  w: {
-    au: 22,
-    nu: 15,
-    ret: 9,
-    sess: 51,
-    eng: null,
-    pv: 571,
-    dir: 16,
-    org: 3,
-    ref: 2
-  },
-  l: {
-    fol: 9149,
-    nf: 131,
-    sub: 3034,
-    ns: 33,
-    imp: 3370,
-    rx: 111,
-    av: 263
-  },
-  e: {
-    aud: 16633,
-    opens: 4697,
-    or: 28.5,
-    clicks: 219,
-    unsubs: 27
-  }
-}, {
-  week: "Sep 1–7",
-  w: {
-    au: 187,
-    nu: 169,
-    ret: 38,
-    sess: 242,
-    eng: 118,
-    pv: 349,
-    dir: 119,
-    org: 47,
-    ref: 16
-  },
-  l: {
-    fol: 9495,
-    nf: 348,
-    sub: 3140,
-    ns: 79,
-    imp: 2075,
-    rx: 85,
-    av: 315
-  },
-  e: {
-    aud: 16602,
-    opens: 3042,
-    or: 18.5,
-    clicks: 215,
-    unsubs: 36
-  }
-}, {
-  week: "Sep 8–14",
-  w: {
-    au: 208,
-    nu: 190,
-    ret: 49,
-    sess: 293,
-    eng: 153,
-    pv: 442,
-    dir: 122,
-    org: 59,
-    ref: 24
-  },
-  l: {
-    fol: 9592,
-    nf: 80,
-    sub: 3183,
-    ns: 32,
-    imp: 7158,
-    rx: 217,
-    av: 294
-  },
-  e: {
-    aud: 16551,
-    opens: 3006,
-    or: 18.1,
-    clicks: 280,
-    unsubs: 18
-  }
-}, {
-  week: "Sep 15–21",
-  w: {
-    au: 213,
-    nu: 187,
-    ret: 52,
-    sess: 326,
-    eng: 166,
-    pv: 466,
-    dir: 119,
-    org: 74,
-    ref: 26
-  },
-  l: {
-    fol: 10182,
-    nf: 608,
-    sub: 3340,
-    ns: 102,
-    imp: 4932,
-    rx: 138,
-    av: 583
-  },
-  e: {
-    aud: 16502,
-    opens: 2907,
-    or: 17.6,
-    clicks: 217,
-    unsubs: 14
-  }
-}, {
-  week: "Sep 22–28",
-  w: {
-    au: 245,
-    nu: 217,
-    ret: 50,
-    sess: 349,
-    eng: 149,
-    pv: 504,
-    dir: 161,
-    org: 65,
-    ref: 19
-  },
-  l: {
-    fol: 10484,
-    nf: 303,
-    sub: 3441,
-    ns: 71,
-    imp: 2849,
-    rx: 86,
-    av: 641
-  },
-  e: {
-    aud: 16429,
-    opens: 4860,
-    or: 29.6,
-    clicks: 866,
-    unsubs: 15
-  }
-}, {
-  week: "Sep 29–Oct 5",
-  w: {
-    au: 215,
-    nu: 187,
-    ret: 57,
-    sess: 305,
-    eng: 147,
-    pv: 466,
-    dir: 127,
-    org: 55,
-    ref: 32
-  },
-  l: {
-    fol: 10854,
-    nf: 308,
-    sub: 3544,
-    ns: 52,
-    imp: 1789,
-    rx: 66,
-    av: 847
-  },
-  e: {
-    aud: 16383,
-    opens: 4917,
-    or: 30.0,
-    clicks: 229,
-    unsubs: 17
-  }
-}, {
-  week: "Oct 6–12",
-  w: {
-    au: 267,
-    nu: 240,
-    ret: 57,
-    sess: 351,
-    eng: 143,
-    pv: 478,
-    dir: 180,
-    org: 63,
-    ref: 30
-  },
-  l: {
-    fol: 10862,
-    nf: 80,
-    sub: 3559,
-    ns: 35,
-    imp: 2938,
-    rx: 113,
-    av: 948
-  },
-  e: {
-    aud: 16251,
-    opens: 4953,
-    or: 30.4,
-    clicks: 1671,
-    unsubs: 21
-  }
-}, {
-  week: "Oct 13–19",
-  w: {
-    au: 310,
-    nu: 285,
-    ret: 63,
-    sess: 470,
-    eng: 192,
-    pv: 591,
-    dir: 237,
-    org: 47,
-    ref: 25
-  },
-  l: {
-    fol: 10882,
-    nf: 19,
-    sub: 3572,
-    ns: 0,
-    imp: 4564,
-    rx: 185,
-    av: 868
-  },
-  e: {
-    aud: 16128,
-    opens: 4785,
-    or: 30.0,
-    clicks: 363,
-    unsubs: 11
-  }
-}, {
-  week: "Oct 20–26",
-  w: {
-    au: 341,
-    nu: 314,
-    ret: 42,
-    sess: 419,
-    eng: 121,
-    pv: 555,
-    dir: 263,
-    org: 49,
-    ref: 28
-  },
-  l: {
-    fol: 11244,
-    nf: 339,
-    sub: 3664,
-    ns: 58,
-    imp: 2206,
-    rx: 102,
-    av: 1378
-  },
-  e: {
-    aud: 15992,
-    opens: 3136,
-    or: 19.7,
-    clicks: 296,
-    unsubs: 27
-  }
-}, {
-  week: "Mar 2–9 '26",
-  w: {
-    au: 72,
-    nu: 68,
-    ret: 7,
-    sess: 76,
-    eng: 49,
-    pv: 79,
-    dir: 46,
-    org: 0,
-    ref: 30
-  },
-  l: {
-    fol: 16365,
-    nf: 1067,
-    sub: 5321,
-    ns: 301,
-    imp: 4803,
-    rx: 164,
-    av: 3816
-  },
-  e: null
-}];
+];
 const C = {
   primary: "#6366f1",
   secondary: "#8b5cf6",
