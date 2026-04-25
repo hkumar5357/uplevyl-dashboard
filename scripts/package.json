@@ -1,0 +1,9 @@
+{
+  "name": "uplevyl-dashboard-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
+}
