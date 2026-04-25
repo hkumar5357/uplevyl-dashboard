@@ -1,0 +1,50 @@
+name: Update Dashboard Data
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: scripts
+
+      - name: Write service account key
+        run: echo '${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}' > /tmp/ga4-key.json
+
+      - name: Collect data and update dashboard
+        env:
+          GA4_PROPERTY_ID: '291261478'
+          GA4_KEY_FILE: '/tmp/ga4-key.json'
+          GHL_API_KEY: ${{ secrets.GHL_API_KEY }}
+          GHL_LOCATION_ID: ${{ secrets.GHL_LOCATION_ID }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_ORG_ID: ${{ secrets.LINKEDIN_ORG_ID }}
+        run: node scripts/collect-data.js
+
+      - name: Clean up credentials
+        if: always()
+        run: rm -f /tmp/ga4-key.json
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "Dashboard Bot"
+          git config user.email "bot@uplevyl.com"
+          git add index.html
+          git diff --staged --quiet || git commit -m "Weekly dashboard update $(date +'%Y-%m-%d')"
+          git push
