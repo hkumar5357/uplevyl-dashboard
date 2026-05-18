@@ -163,67 +163,87 @@ const {useState,useEffect} = React;
 const {LineChart,Line,BarChart,Bar,AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,Legend} = Recharts;
 
 
-// ─── LIVE DATA (collected May 11, 2026) ────────────────────────────────────
+// âââ LIVE DATA (collected May 11, 2026) ââââââââââââââââââââââââââââââââââââ
 const LIVE_DATA = {
-  "lastUpdated": "May 11, 2026",
-  "currentWeek": "May 4–May 10",
+  "lastUpdated": "May 18, 2026",
+  "currentWeek": "May 11âMay 17",
   "website": {
-    "activeUsers": 67,
-    "newUsers": 63,
-    "returningUsers": 4,
-    "sessions": 76,
-    "engagedSessions": 48,
-    "engagementRate": 63.16,
-    "pageViews": 101,
-    "avgEngagement": "1m 16s",
+    "activeUsers": 72,
+    "newUsers": 67,
+    "returningUsers": 5,
+    "sessions": 81,
+    "engagedSessions": 45,
+    "engagementRate": 55.56,
+    "pageViews": 84,
+    "avgEngagement": "13s",
     "channels": {
-      "Direct": 54,
-      "Referral": 22,
-      "Organic": 0
+      "Direct": 48,
+      "Referral": 27,
+      "Organic": 6
     },
     "topPages": [
       {
-        "page": "Uplevyl",
-        "views": 48
-      },
-      {
-        "page": "Privacy Policy - Uplevyl",
-        "views": 15
-      },
-      {
-        "page": "Terms and Condtions - Uplevyl",
-        "views": 15
-      },
-      {
-        "page": "404: This page could not be found.",
-        "views": 12
+        "page": "Careers: QA Engineer",
+        "views": 22
       },
       {
         "page": "Our Team - Uplevyl",
+        "views": 14
+      },
+      {
+        "page": "Careers: Security Consultant",
+        "views": 12
+      },
+      {
+        "page": "Careers: DevOps Engineer",
+        "views": 8
+      },
+      {
+        "page": "Careers: Data Engineer",
         "views": 6
+      },
+      {
+        "page": "Careers: Full Stack Developer",
+        "views": 5
+      },
+      {
+        "page": "WeHub Vision & Ethos - Uplevyl",
+        "views": 5
+      },
+      {
+        "page": "Careers: Mobile App Developer",
+        "views": 3
+      },
+      {
+        "page": "Privacy Policy - Uplevyl",
+        "views": 3
+      },
+      {
+        "page": "About - Uplevyl",
+        "views": 2
       }
     ]
   },
   "linkedin": {
-    "followers": 16365,
-    "newFollowers": 1067,
-    "newsletterSubs": 5321,
-    "newSubs": 301,
-    "pageViews": 1938,
-    "uniqueVisitors": 704,
-    "impressions": 4803,
-    "reactions": 164,
-    "comments": 12,
-    "reposts": 7,
-    "articleViews": 3816,
-    "engagements": 45
+    "followers": 16883,
+    "newFollowers": 90,
+    "newsletterSubs": 5503,
+    "newSubs": 31,
+    "pageViews": 769,
+    "uniqueVisitors": 279,
+    "impressions": 5384,
+    "reactions": 199,
+    "comments": 14,
+    "reposts": 0,
+    "articleViews": 5108,
+    "engagements": 213
   }
 };
 
-// ─── HISTORICAL (auto-collected weekly data) ──────────────────────
+// âââ HISTORICAL (auto-collected weekly data) ââââââââââââââââââââââ
 const WEEKLY = [
   {
-    "week": "Feb 9–15",
+    "week": "Feb 9â15",
     "w": {
       "au": 110,
       "nu": 103,
@@ -247,7 +267,7 @@ const WEEKLY = [
     "e": null
   },
   {
-    "week": "Aug 18–24",
+    "week": "Aug 18â24",
     "w": {
       "au": 33,
       "nu": 24,
@@ -277,7 +297,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Aug 25–31",
+    "week": "Aug 25â31",
     "w": {
       "au": 22,
       "nu": 15,
@@ -307,7 +327,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Sep 1–7",
+    "week": "Sep 1â7",
     "w": {
       "au": 187,
       "nu": 169,
@@ -337,7 +357,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Sep 8–14",
+    "week": "Sep 8â14",
     "w": {
       "au": 208,
       "nu": 190,
@@ -367,7 +387,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Sep 15–21",
+    "week": "Sep 15â21",
     "w": {
       "au": 213,
       "nu": 187,
@@ -397,7 +417,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Sep 22–28",
+    "week": "Sep 22â28",
     "w": {
       "au": 245,
       "nu": 217,
@@ -427,7 +447,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Sep 29–Oct 5",
+    "week": "Sep 29âOct 5",
     "w": {
       "au": 215,
       "nu": 187,
@@ -457,7 +477,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Oct 6–12",
+    "week": "Oct 6â12",
     "w": {
       "au": 267,
       "nu": 240,
@@ -487,7 +507,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Oct 13–19",
+    "week": "Oct 13â19",
     "w": {
       "au": 310,
       "nu": 285,
@@ -517,7 +537,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Oct 20–26",
+    "week": "Oct 20â26",
     "w": {
       "au": 341,
       "nu": 314,
@@ -547,7 +567,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Mar 2–9 '26",
+    "week": "Mar 2â9 '26",
     "w": {
       "au": 72,
       "nu": 68,
@@ -571,7 +591,7 @@ const WEEKLY = [
     "e": null
   },
   {
-    "week": "Apr 13–Apr 19",
+    "week": "Apr 13âApr 19",
     "w": {
       "au": 100,
       "nu": 98,
@@ -593,7 +613,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Apr 20–Apr 26",
+    "week": "Apr 20âApr 26",
     "w": {
       "au": 77,
       "nu": 70,
@@ -615,7 +635,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "Apr 27–May 3",
+    "week": "Apr 27âMay 3",
     "w": {
       "au": 74,
       "nu": 70,
@@ -637,7 +657,7 @@ const WEEKLY = [
     }
   },
   {
-    "week": "May 4–May 10",
+    "week": "May 4âMay 10",
     "w": {
       "au": 67,
       "nu": 63,
@@ -656,6 +676,36 @@ const WEEKLY = [
       "or": 0,
       "clicks": 0,
       "unsubs": 0
+    }
+  },
+  {
+    "week": "May 11âMay 17",
+    "w": {
+      "au": 72,
+      "nu": 67,
+      "ret": 5,
+      "sess": 81,
+      "eng": 45,
+      "pv": 84,
+      "dir": 48,
+      "org": 6,
+      "ref": 27
+    },
+    "l": {
+      "fol": 16883,
+      "nf": 90,
+      "sub": 5503,
+      "ns": 31,
+      "imp": 5384,
+      "rx": 199,
+      "av": 5108
+    },
+    "e": {
+      "aud": 7245,
+      "opens": 1291,
+      "or": 17.82,
+      "clicks": 108,
+      "unsubs": 2
     }
   }
 ];
@@ -808,7 +858,7 @@ function TabButton({
   }, label);
 }
 
-// ─── OVERVIEW TAB ─────────────────────────────────────────────────────
+// âââ OVERVIEW TAB âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function OverviewTab() {
   const wd = LIVE_DATA.website;
   const ld = LIVE_DATA.linkedin;
@@ -1047,7 +1097,7 @@ function OverviewTab() {
   }, "Avg open rate of ~25% across campaigns. Best performer at 30.4% open rate (Oct 6-12 eblast).")))));
 }
 
-// ─── WEBSITE TAB ──────────────────────────────────────────────────────
+// âââ WEBSITE TAB ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function WebsiteTab() {
   const wd = LIVE_DATA.website;
   const channelData = Object.entries(wd.channels).filter(([, v]) => v > 0).map(([name, value]) => ({
@@ -1254,7 +1304,7 @@ function WebsiteTab() {
   }, p.views, " views")))));
 }
 
-// ─── LINKEDIN TAB ─────────────────────────────────────────────────────
+// âââ LINKEDIN TAB âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function LinkedInTab() {
   const ld = LIVE_DATA.linkedin;
   const folTrend = WEEKLY.filter(w => w.l?.fol).map(w => ({
@@ -1513,7 +1563,7 @@ function LinkedInTab() {
   })))));
 }
 
-// ─── EMAIL TAB ────────────────────────────────────────────────────────
+// âââ EMAIL TAB ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function EmailTab() {
   const emailData = WEEKLY.filter(w => w.e).map(w => ({
     week: w.week,
@@ -1726,35 +1776,35 @@ function EmailTab() {
       fontSize: 13,
       padding: "10px 12px"
     }
-  }, d.audience?.toLocaleString() || "—"), /*#__PURE__*/React.createElement("td", {
+  }, d.audience?.toLocaleString() || "â"), /*#__PURE__*/React.createElement("td", {
     style: {
       color: C.text,
       fontSize: 13,
       padding: "10px 12px"
     }
-  }, d.opens?.toLocaleString() || "—"), /*#__PURE__*/React.createElement("td", {
+  }, d.opens?.toLocaleString() || "â"), /*#__PURE__*/React.createElement("td", {
     style: {
       color: d.openRate >= 25 ? C.green : C.orange,
       fontSize: 13,
       padding: "10px 12px",
       fontWeight: 600
     }
-  }, d.openRate ? `${d.openRate}%` : "—"), /*#__PURE__*/React.createElement("td", {
+  }, d.openRate ? `${d.openRate}%` : "â"), /*#__PURE__*/React.createElement("td", {
     style: {
       color: C.text,
       fontSize: 13,
       padding: "10px 12px"
     }
-  }, d.clicks || "—"), /*#__PURE__*/React.createElement("td", {
+  }, d.clicks || "â"), /*#__PURE__*/React.createElement("td", {
     style: {
       color: d.unsubs > 10 ? C.red : C.muted,
       fontSize: 13,
       padding: "10px 12px"
     }
-  }, d.unsubs || "—"))))))));
+  }, d.unsubs || "â"))))))));
 }
 
-// ─── MAIN APP ─────────────────────────────────────────────────────────
+// âââ MAIN APP âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function App() {
   const [activeTab, setActiveTab] = useState("overview");
   const tabs = [{
